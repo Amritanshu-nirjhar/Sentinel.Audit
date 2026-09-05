@@ -158,6 +158,54 @@ code, pre, .mono {
   box-shadow: 0 0 15px var(--cyber-cyan-glow);
 }
 
+.brand-logo-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid rgba(0, 245, 255, 0.4);
+  box-shadow: 0 0 16px var(--cyber-cyan-glow);
+  transition: var(--trans-smooth);
+}
+
+.brand-logo-img:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 25px var(--cyber-cyan);
+}
+
+.hero-logo-emblem {
+  width: 92px;
+  height: 92px;
+  border-radius: 18px;
+  object-fit: cover;
+  margin: 0 auto 1.25rem;
+  display: block;
+  border: 2px solid var(--cyber-cyan);
+  box-shadow: 0 0 35px var(--cyber-cyan-glow), 0 0 15px var(--electric-violet-glow);
+  animation: logo-glow-pulse 3s infinite alternate ease-in-out;
+}
+
+@keyframes logo-glow-pulse {
+  0% {
+    box-shadow: 0 0 20px var(--cyber-cyan-glow);
+    transform: scale(0.98);
+  }
+  100% {
+    box-shadow: 0 0 45px var(--cyber-cyan), 0 0 25px var(--electric-violet-glow);
+    transform: scale(1.02);
+  }
+}
+
+.modal-logo-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--cyber-cyan);
+  box-shadow: 0 0 12px var(--cyber-cyan-glow);
+  flex-shrink: 0;
+}
+
 .brand-title-group {
   display: flex;
   flex-direction: column;
@@ -1851,6 +1899,10 @@ code, pre, .mono {
   .nav-telemetry-center {
     display: none; /* Keep top bar clean on phones */
   }
+  .brand-logo-img {
+    width: 34px;
+    height: 34px;
+  }
   .brand-logo-text {
     font-size: 1.15rem;
   }
@@ -1865,6 +1917,12 @@ code, pre, .mono {
   /* Hero & Headings */
   .hero-instrument {
     padding: 1.75rem 1rem 1rem;
+  }
+  .hero-logo-emblem {
+    width: 68px;
+    height: 68px;
+    margin-bottom: 0.85rem;
+    border-radius: 14px;
   }
   .hero-title {
     font-size: 2rem;
