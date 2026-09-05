@@ -1,0 +1,92 @@
+[
+  {
+    "id": "SENTINEL-IN-2026-EAAF2DB2",
+    "timestamp": "2026-09-05T08:48:18.238990Z",
+    "type": "PHISHING_URL",
+    "verdict": "MALICIOUS",
+    "score": 37,
+    "city": "New Delhi",
+    "location": "New Delhi Metro Transit Corridor",
+    "coords": [
+      28.6139,
+      77.209
+    ],
+    "target": "Unknown / Not Applicable",
+    "details": "URL uses unencrypted 'http://' rather than secure 'https://'."
+  },
+  {
+    "id": "SENTINEL-IN-2026-4CAB47E7",
+    "timestamp": "2026-09-05T08:46:45.056925Z",
+    "type": "PHISHING_URL",
+    "verdict": "MALICIOUS",
+    "score": 37,
+    "city": "New Delhi",
+    "location": "New Delhi Metro Transit Corridor",
+    "coords": [
+      28.6139,
+      77.209
+    ],
+    "target": "Unknown / Not Applicable",
+    "details": "URL uses unencrypted 'http://' rather than secure 'https://'."
+  },
+  {
+    "id": "SENTINEL-IN-2026-DEL-0419",
+    "timestamp": "2026-09-04T10:14:22Z",
+    "type": "UPI_TAMPER_STICKER",
+    "verdict": "MALICIOUS",
+    "score": 12,
+    "city": "New Delhi",
+    "location": "Rajiv Chowk Metro Station - Parking Booth 3",
+    "coords": [
+      28.6328,
+      77.2197
+    ],
+    "target": "State Bank of India (Spoofed)",
+    "details": "Tampered physical QR sticker pasted over DMRC Smart Parking QR. Payee address altered to fake VPA."
+  },
+  {
+    "id": "SENTINEL-IN-2026-BOM-0883",
+    "timestamp": "2026-09-04T18:45:10Z",
+    "type": "PHISHING_URL",
+    "verdict": "MALICIOUS",
+    "score": 8,
+    "city": "Mumbai",
+    "location": "Bandra Kurla Complex (BKC) - Cafe Hub",
+    "coords": [
+      19.0657,
+      72.8687
+    ],
+    "target": "HDFC NetBanking Clone",
+    "details": "Tabletop acrylic stand QR redirecting via bit.ly/hdfc-billpay to freshly registered phishing domain."
+  },
+  {
+    "id": "SENTINEL-IN-2026-BLR-0291",
+    "timestamp": "2026-09-05T07:12:00Z",
+    "type": "MALWARE_APK",
+    "verdict": "MALICIOUS",
+    "score": 5,
+    "city": "Bengaluru",
+    "location": "Indiranagar 100ft Road - EV Charging Station",
+    "coords": [
+      12.9784,
+      77.6408
+    ],
+    "target": "Fake Bescom Support App",
+    "details": "QR code prompt claiming urgent KYC update for EV charging, initiating direct download of bescom_quick_kyc.apk."
+  },
+  {
+    "id": "SENTINEL-IN-2026-HYD-0174",
+    "timestamp": "2026-09-05T09:30:15Z",
+    "type": "ROGUE_WIFI",
+    "verdict": "SUSPICIOUS",
+    "score": 45,
+    "city": "Hyderabad",
+    "location": "HITEC City Cyber Towers Food Court",
+    "coords": [
+      17.4474,
+      78.3762
+    ],
+    "target": "Unencrypted Rogue Hotspot",
+    "details": "WIFI payload broadcasting fake high-speed guest network with unencrypted credentials."
+  }
+]

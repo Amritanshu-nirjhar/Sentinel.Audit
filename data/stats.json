@@ -1,0 +1,8 @@
+{
+  "totalScans": 3484,
+  "threatsCaught": 491,
+  "upiTampering": 218,
+  "phishingUrls": 194,
+  "malwareApks": 77,
+  "avgAnalysisLatencyMs": 142
+}
