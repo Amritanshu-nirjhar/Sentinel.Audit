@@ -15,6 +15,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/STATUS-OPERATIONAL-00FF88?style=for-the-badge&logo=shield" alt="Status: Operational">
   <img src="https://img.shields.io/badge/EDITION-HACKATHON_2026-00F5FF?style=for-the-badge" alt="Edition: 2026">
+  <img src="https://img.shields.io/badge/LANGUAGES-INDIC_&_ENGLISH-FF6B00?style=for-the-badge" alt="Languages: Indic & English">
   <img src="https://img.shields.io/badge/PLATFORM-MOBILE_&_DESKTOP-7B2FFF?style=for-the-badge" alt="Platform: Mobile & Desktop">
   <img src="https://img.shields.io/badge/LICENSE-MIT-E8EAF0?style=for-the-badge" alt="License: MIT">
 </p>
@@ -40,6 +41,7 @@ This has fostered a rapid rise in **Quishing (QR Phishing)**:
 Sentinel.Audit provides a real-time forensic inspection sandbox for any QR code, delivering:
 - **Instant Pre-Execution Verdict**: ✅ `SAFE`, ⚠️ `SUSPICIOUS`, or ❌ `MALICIOUS` with a granular 0–100 Safety Score.
 - **Deep 12-Vector Threat Analysis**: Heuristic auditing of UPI parameters, canonical redirect hops, domain entropy, brand lookalike algorithms, and dangerous MIME types.
+- **Multilingual Indic Brand Defense**: Real-time cross-lingual detection across **Hindi, Tamil, Telugu, Bengali, Marathi**, and **English** with Unicode anti-evasion normalization.
 - **1-Click Cyber Crime Reporting**: Automated lookup of jurisdictional Indian Cyber Crime Police Stations (IFSO Delhi, BKC Mumbai, CID Bengaluru, TGCSB Hyderabad, etc.), instant compilation of a **stamped FIR-ready Evidence Dossier (PDF)**, and pre-formatted text for `cybercrime.gov.in`.
 - **Community Threat Radar**: Tactical geospatial map visualizing physical QR tampering clusters across commercial districts and transit hubs.
 - **Curated Demo Attack Matrix**: 15 preloaded real-world attack scenarios for instant hackathon demonstrations without requiring paper printouts.
@@ -78,16 +80,22 @@ Built as a high-fidelity **"digital instrument"** adhering to modern cybersecuri
 - **UPI Protocol Parser**: Validates NPCI parameters (`pa`, `pn`, `mc`, `am`, `tn`). Flags payee-name mismatches, merchant code anomalies, and coercive transaction notes ("Immediate Disconnection", "Penalty").
 - **Canonical Redirect Tracer**: Follows HTTP 301/302/307 shortener chains to uncover the destination host.
 - **Shannon Domain Entropy**: Calculates character entropy to detect algorithmically generated domains (DGA) and typo-squatted phishing hosts (`.top`, `.xyz`, `.cc`).
-- **Brand Impersonation Detector**: Identifies unauthorized banking and government mimicry (SBI, HDFC, ICICI, Parivahan, Income Tax Department, Binance).
+- **Multilingual Brand Impersonation Detector**: Identifies unauthorized banking, government, and payment portal mimicry across Indic scripts and English.
 - **Binary Package Classifier**: Flags automated downloads of `.apk`, `.exe`, `.dmg`, and `.bat` payloads.
 
-### 4. Incident Reporting & FIR Dossier Generator (`js/reporting.js`)
+### 4. Multilingual Brand Impersonation & Unicode Anti-Evasion Engine (`js/brandKeywords.js` & `brand_keywords.py`)
+- **5 Indic Languages & English**: Native brand keyword catalogs covering Hindi (हिंदी), Tamil (தமிழ்), Telugu (తెలుగు), Bengali (বাংলা), Marathi (मराठी), and English (en).
+- **18+ Leading Indian Brand Catalogs**: Financial institutions (SBI, HDFC, ICICI, Axis, PNB, BOB, Canara), UPI payment gateways (PhonePe, Paytm, Google Pay/GPay, BHIM), public/government portals (IRCTC, Parivahan, Income Tax Dept, PM-KISAN, LIC), and telecom operators (Jio, Airtel).
+- **Unicode Script Classifier & NFC Normalizer**: Detects Devanagari (`U+0900–U+097F`), Tamil (`U+0B80–U+0BFF`), Telugu (`U+0C00–U+0C7F`), Bengali (`U+0980–U+09FF`), and Latin script blocks. Performs NFC normalization and strips zero-width spaces/joiners (`\u200B`, `\u200C`, `\u200D`, `\uFEFF`) to thwart attacker evasion tactics.
+- **Deep Target & UPI Forensics**: Scans page titles, meta descriptions, target URLs, and UPI `pn` payee names, adding a **+35 risk point penalty** towards a `MALICIOUS` verdict for unverified hosts while recognizing legitimate regional banking domains.
+
+### 5. Incident Reporting & FIR Dossier Generator (`js/reporting.js`)
 - **Jurisdictional Station Locator**: Includes directory data for Delhi (IFSO Dwarka), Mumbai (BKC), Bengaluru (Palace Road CID), Hyderabad (TGCSB), Chennai, Kolkata, Pune, and Gurugram.
 - **Cryptographic SHA-256 Hashing**: Calculates a unique fingerprint of the evidence for legal chain-of-custody preservation.
 - **Stamped Complaint PDF Dossier**: Uses `jsPDF` to compile a formal, 1-page A4 complaint sheet ready to carry to a police station, citing relevant sections of the **IT Act 2000 (Section 66D, 43)** and **IPC 420**.
 - **National Portal Formatter**: Generates ready-to-copy structured complaint drafts for the National Cyber Crime Reporting Portal (`cybercrime.gov.in`).
 
-### 5. Community Threat Radar Map (`js/threat_map.js`)
+### 6. Community Threat Radar Map (`js/threat_map.js`)
 - Interactive dark tactical map powered by Leaflet and OpenStreetMap.
 - Animated pulsing radar rings marking recent tamper reports across metro stations, parking booths, and food courts.
 - City quick-zoom filters (Delhi, Mumbai, Bengaluru, Hyderabad, Pune, All India).
@@ -123,22 +131,26 @@ The platform includes a built-in test matrix in the scanner HUD:
 
 ```
 Sentinel.Audit/
-├── index.html          # Main application & holographic scanner HUD
-├── server.py           # Python 3 forensic server & REST API
+├── index.html              # Main application & holographic scanner HUD
+├── server.py               # Python 3 forensic server & REST API
+├── brand_keywords.py       # Python multilingual brand catalog & script detection engine
+├── test_brand_keywords.py  # Python unit test suite for Indic brand impersonation
+├── test_multilingual.js    # JavaScript test suite for Unicode script & brand detection
 ├── css/
-│   └── style.css       # Cinematic command-center design system & mobile styles
+│   └── style.css           # Cinematic command-center design system & mobile styles
 ├── js/
-│   ├── analyzer.js     # 12-vector heuristic threat analysis engine
-│   ├── app.js          # Controller orchestrating camera, dropzone, and UI
-│   ├── audio.js        # Web Audio API tactical sound synthesizer
-│   ├── demo_data.js    # 15 curated real-world attack scenarios
-│   ├── reporting.js    # Indian Cyber Cell directory & FIR PDF generator
-│   └── threat_map.js   # Community Threat Radar Leaflet map integration
+│   ├── analyzer.js         # 12-vector heuristic threat analysis engine
+│   ├── app.js              # Controller orchestrating camera, dropzone, and UI
+│   ├── audio.js            # Web Audio API tactical sound synthesizer
+│   ├── brandKeywords.js    # Multilingual brand catalog & Unicode anti-evasion engine (HI, TA, TE, BN, MR, EN)
+│   ├── demo_data.js        # 15 curated real-world attack scenarios
+│   ├── reporting.js        # Indian Cyber Cell directory & FIR PDF generator
+│   └── threat_map.js       # Community Threat Radar Leaflet map integration
 ├── data/
-│   ├── reports.json    # Persisted community tamper incidents
-│   └── stats.json      # Scan and threat neutralization metrics
+│   ├── reports.json        # Persisted community tamper incidents
+│   └── stats.json          # Scan and threat neutralization metrics
 └── assets/
-    └── logo.jpg        # Official cyber shield brand emblem & favicon
+    └── logo.jpg            # Official cyber shield brand emblem & favicon
 ```
 
 ---
@@ -162,6 +174,12 @@ python3 server.py
 Visit **[http://localhost:8000](http://localhost:8000)** in Chrome, Safari, or Brave.
 
 > **Tip for Mobile Demo**: Ensure your smartphone is connected to the same Wi-Fi network as your computer, and navigate to `http://<your-computer-ip>:8000` on your mobile browser.
+
+### 4. Run Multilingual & Forensics Test Suites
+```bash
+node test_multilingual.js
+python3 test_brand_keywords.py
+```
 
 ---
 
