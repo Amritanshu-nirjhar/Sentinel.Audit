@@ -16,6 +16,7 @@ class SentinelApp {
       malwareApks: 5
     };
     this.scanHistory = [];
+    this.currentFacingMode = "environment";
   }
 
   init() {
@@ -70,11 +71,27 @@ class SentinelApp {
     if (startCamBtn) {
       startCamBtn.addEventListener("click", () => {
         window.audioSys.playClick();
+        if ("vibrate" in navigator) {
+          try { navigator.vibrate(20); } catch (e) {}
+        }
         if (this.isScanningCamera) {
           this.stopCamera();
         } else {
           this.startCamera();
         }
+      });
+    }
+
+    // Camera Flip Button (for mobile front/rear camera toggle)
+    const flipCamBtn = document.getElementById("btn-flip-camera");
+    if (flipCamBtn) {
+      flipCamBtn.addEventListener("click", () => {
+        window.audioSys.playClick();
+        if ("vibrate" in navigator) {
+          try { navigator.vibrate(25); } catch (e) {}
+        }
+        this.currentFacingMode = this.currentFacingMode === "environment" ? "user" : "environment";
+        this.flipCamera();
       });
     }
 
@@ -85,6 +102,9 @@ class SentinelApp {
     if (dropzone && fileInput) {
       dropzone.addEventListener("click", () => {
         window.audioSys.playClick();
+        if ("vibrate" in navigator) {
+          try { navigator.vibrate(15); } catch (e) {}
+        }
         fileInput.click();
       });
 
@@ -130,7 +150,9 @@ class SentinelApp {
     if (audioBtn) {
       audioBtn.addEventListener("click", () => {
         const isMuted = window.audioSys.toggleMute();
-        audioBtn.innerHTML = isMuted ? '<i class="fa-solid fa-volume-xmark"></i> MUTE' : '<i class="fa-solid fa-volume-high"></i> AUDIO ON';
+        audioBtn.innerHTML = isMuted 
+          ? '<i class="fa-solid fa-volume-xmark"></i> <span class="nav-btn-label">MUTE</span>' 
+          : '<i class="fa-solid fa-volume-high"></i> <span class="nav-btn-label">AUDIO ON</span>';
         audioBtn.classList.toggle("active", !isMuted);
       });
     }
@@ -329,11 +351,12 @@ class SentinelApp {
     const video = document.getElementById("scanner-video");
     const reticleText = document.getElementById("reticle-status-text");
     const camBtn = document.getElementById("btn-start-camera");
+    const flipBtn = document.getElementById("btn-flip-camera");
 
     try {
       if (reticleText) reticleText.textContent = "INITIALIZING SENSOR...";
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } }
+        video: { facingMode: this.currentFacingMode || "environment", width: { ideal: 1280 }, height: { ideal: 720 } }
       });
       this.videoStream = stream;
       video.srcObject = stream;
@@ -344,6 +367,9 @@ class SentinelApp {
       if (camBtn) {
         camBtn.innerHTML = '<i class="fa-solid fa-stop"></i> Disengage Camera';
         camBtn.classList.add("btn-danger-glow");
+      }
+      if (flipBtn) {
+        flipBtn.style.display = "inline-flex";
       }
       if (reticleText) reticleText.textContent = "SENSOR ACTIVE // SCANNING";
       document.querySelector(".viewfinder-frame")?.classList.add("scanning-active");
@@ -364,14 +390,54 @@ class SentinelApp {
     }
     this.isScanningCamera = false;
     const camBtn = document.getElementById("btn-start-camera");
+    const flipBtn = document.getElementById("btn-flip-camera");
     const reticleText = document.getElementById("reticle-status-text");
 
     if (camBtn) {
       camBtn.innerHTML = '<i class="fa-solid fa-camera"></i> Engage Optical Sensor';
       camBtn.classList.remove("btn-danger-glow");
     }
+    if (flipBtn) {
+      flipBtn.style.display = "none";
+    }
     if (reticleText) reticleText.textContent = "OPTICAL SENSOR STANDBY";
     document.querySelector(".viewfinder-frame")?.classList.remove("scanning-active");
+  }
+
+  async flipCamera() {
+    if (!this.isScanningCamera) return;
+    if (this.videoStream) {
+      this.videoStream.getTracks().forEach(track => track.stop());
+      this.videoStream = null;
+    }
+    const video = document.getElementById("scanner-video");
+    const reticleText = document.getElementById("reticle-status-text");
+
+    try {
+      if (reticleText) reticleText.textContent = `SWITCHING TO ${this.currentFacingMode.toUpperCase()}...`;
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: this.currentFacingMode, width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+      this.videoStream = stream;
+      video.srcObject = stream;
+      video.setAttribute("playsinline", true);
+      await video.play();
+
+      if (reticleText) reticleText.textContent = "SENSOR ACTIVE // SCANNING";
+      window.audioSys.playScanSweep();
+      this.cameraScanLoop();
+    } catch (err) {
+      console.warn("Camera flip constraint fallback:", err);
+      try {
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        this.videoStream = fallbackStream;
+        video.srcObject = fallbackStream;
+        await video.play();
+        this.cameraScanLoop();
+      } catch (e2) {
+        this.showToast("Could not switch camera sensor on this device.", "error");
+      }
+    }
   }
 
   cameraScanLoop() {
@@ -496,12 +562,22 @@ class SentinelApp {
     if (overlay) overlay.style.display = "none";
 
     // Play appropriate verdict audio
+    // Play appropriate verdict audio and mobile haptics
     if (analysis.verdict === "SAFE") {
       window.audioSys.playVerdictSafe();
+      if ("vibrate" in navigator) {
+        try { navigator.vibrate([40, 50, 40]); } catch (e) {}
+      }
     } else if (analysis.verdict === "SUSPICIOUS") {
       window.audioSys.playVerdictSuspicious();
+      if ("vibrate" in navigator) {
+        try { navigator.vibrate([60, 40, 80]); } catch (e) {}
+      }
     } else {
       window.audioSys.playVerdictMalicious();
+      if ("vibrate" in navigator) {
+        try { navigator.vibrate([100, 50, 120, 50, 200]); } catch (e) {}
+      }
     }
 
     // Update UI Elements
@@ -515,6 +591,13 @@ class SentinelApp {
     const deck = document.getElementById("forensic-deck");
     if (!deck) return;
     deck.style.display = "block";
+
+    // Auto-scroll into view smoothly on mobile screens
+    if (window.innerWidth <= 768) {
+      setTimeout(() => {
+        deck.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 120);
+    }
 
     // 1. Radial Score Gauge
     const scoreVal = document.getElementById("gauge-score-value");

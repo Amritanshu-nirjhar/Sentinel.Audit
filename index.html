@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
   <title>Sentinel.Audit // QRShield — Quishing Threat Defense & Cyber Crime Reporting</title>
   <meta name="description" content="High-fidelity cybersecurity platform for real-time QR code forensic inspection, UPI payment tampering detection, and instant reporting to Indian Cyber Crime Cells.">
   <meta name="theme-color" content="#060919">
@@ -53,15 +53,15 @@
 
     <div class="nav-actions">
       <button class="btn-nav-audio active" id="btn-audio-toggle" title="Toggle Synthesizer Feedback">
-        <i class="fa-solid fa-volume-high"></i> AUDIO ON
+        <i class="fa-solid fa-volume-high"></i> <span class="nav-btn-label">AUDIO ON</span>
       </button>
-      <a href="#threat-map-section" class="btn-nav-audio">
-        <i class="fa-solid fa-satellite-dish"></i> RADAR MAP
+      <a href="#threat-map-section" class="btn-nav-audio" title="Threat Radar Map">
+        <i class="fa-solid fa-satellite-dish"></i> <span class="nav-btn-label">RADAR MAP</span>
       </a>
-      <div class="telemetry-stat-item" style="border-left: 1px solid var(--border-glass); padding-left: 0.85rem;">
-        <span class="stat-label">Helpline:</span>
-        <span class="stat-val" style="color: var(--alert-red);">1930</span>
-      </div>
+      <a href="tel:1930" class="nav-helpline-link" title="Call National Cyber Crime Helpline 1930">
+        <span class="helpline-icon"><i class="fa-solid fa-phone"></i></span>
+        <span class="helpline-text"><span class="helpline-label">Helpline:</span> <span class="helpline-number">1930</span></span>
+      </a>
     </div>
   </nav>
 
@@ -122,7 +122,10 @@
           </div>
           <div class="hud-camera-controls">
             <button class="btn-hud-primary" id="btn-start-camera">
-              <i class="fa-solid fa-camera"></i> Engage Optical Sensor
+              <i class="fa-solid fa-camera"></i> <span id="btn-start-camera-text">Engage Optical Sensor</span>
+            </button>
+            <button class="btn-hud-secondary" id="btn-flip-camera" title="Switch Camera (Front/Rear)" style="display: none;">
+              <i class="fa-solid fa-camera-rotate"></i> <span class="flip-cam-text">Flip Camera</span>
             </button>
           </div>
         </div>
@@ -132,8 +135,11 @@
           <div style="display: flex; justify-content: center;">
             <div class="dropzone-box" id="scanner-dropzone">
               <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
-              <h3 class="dropzone-prompt">Drop QR Image Here or Click to Browse</h3>
-              <p class="dropzone-sub">Supports PNG, JPG, WebP, SVG screenshots from desktop or mobile</p>
+              <h3 class="dropzone-prompt">Drop QR Image Here or Tap to Browse</h3>
+              <p class="dropzone-sub">Supports PNG, JPG, WebP, SVG from photo library, camera, or screenshots</p>
+              <div class="dropzone-mobile-btn-wrap">
+                <span class="btn-dropzone-mobile"><i class="fa-solid fa-camera-retro"></i> Select Photo / Camera</span>
+              </div>
               <span class="dropzone-chip"><i class="fa-solid fa-paste"></i> Tip: Press Ctrl+V / Cmd+V to paste any copied screenshot</span>
               <input type="file" id="qr-file-input" accept="image/*" style="display: none;">
             </div>
@@ -305,6 +311,9 @@
         </button>
       </div>
       <div class="table-responsive">
+        <div class="mobile-table-hint">
+          <i class="fa-solid fa-arrows-left-right"></i> Swipe table horizontally to inspect all telemetry columns
+        </div>
         <table class="history-table">
           <thead>
             <tr>
@@ -326,6 +335,7 @@
   <!-- Incident Reporting Modal (FIR Complaint Sheet) -->
   <div class="report-modal-backdrop" id="report-modal" role="dialog" aria-modal="true">
     <div class="report-modal-dialog">
+      <div class="modal-mobile-handle" aria-hidden="true"></div>
       <div class="modal-header">
         <div class="modal-title-wrap">
           <img src="assets/logo.jpg" alt="Sentinel.Audit Logo" class="modal-logo-img">

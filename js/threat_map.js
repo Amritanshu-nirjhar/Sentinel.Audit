@@ -15,12 +15,15 @@ class ThreatRadar {
     const el = document.getElementById(containerId);
     if (!el || typeof L === "undefined") return;
 
-    // Center on India
+    // Center on India with mobile-optimized touch options
     this.map = L.map(containerId, {
       center: [20.5937, 78.9629],
       zoom: 5,
       zoomControl: true,
-      attributionControl: false
+      attributionControl: false,
+      tap: false,
+      touchZoom: true,
+      bounceAtZoomLimits: false
     });
 
     // Default to OpenStreetMap with dark tactical filter (100% free, NO API key required)
@@ -43,6 +46,19 @@ class ThreatRadar {
     this.tileLayer = L.tileLayer(tileUrl, tileOptions).addTo(this.map);
 
     this.markersLayer = L.layerGroup().addTo(this.map);
+
+    // Ensure map redraws properly upon mobile screen resize and orientation change
+    let resizeTimer = null;
+    const handleViewportChange = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (this.map) {
+          this.map.invalidateSize();
+        }
+      }, 250);
+    };
+    window.addEventListener("resize", handleViewportChange, { passive: true });
+    window.addEventListener("orientationchange", handleViewportChange, { passive: true });
 
     // Initial load
     this.loadHotspots();
