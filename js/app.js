@@ -449,19 +449,48 @@ class SentinelApp {
       "DECOUPLING QR MODULE GRID & CORRECTION BITS...",
       "CLASSIFYING PAYLOAD SCHEME & EXECUTION PROTOCOL...",
       "CALCULATING SHANNON LEXICAL DOMAIN ENTROPY...",
+      "SCANNING UNICODE SCRIPT RANGES (DEVANAGARI, TAMIL, TELUGU, BENGALI)...",
       "TRACING CANONICAL REDIRECT HOPS & SHORTENERS...",
       "AUDITING NPCI REGISTRY & MERCHANT CATEGORY CODES...",
-      "RUNNING HEURISTIC BRAND IMPERSONATION CLASSIFIER..."
+      "RUNNING MULTILINGUAL BRAND IMPERSONATION CLASSIFIER..."
     ];
 
     const teleText = document.getElementById("telemetry-phase-text");
     for (let i = 0; i < telemetryLines.length; i++) {
       if (teleText) teleText.textContent = telemetryLines[i];
-      await new Promise(r => setTimeout(r, 180));
+      await new Promise(r => setTimeout(r, 150));
+    }
+
+    // Resolve page metadata if available (demoScenario or backend URL extraction)
+    let pageMetadata = null;
+    if (demoScenario) {
+      pageMetadata = {
+        pageTitle: demoScenario.title,
+        metaDescription: demoScenario.description
+      };
+    } else if (rawPayload.startsWith("http://") || rawPayload.startsWith("https://")) {
+      try {
+        const resp = await fetch("/api/analyze-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: rawPayload })
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.pageTitle || data.metaDescription) {
+            pageMetadata = {
+              pageTitle: data.pageTitle,
+              metaDescription: data.metaDescription
+            };
+          }
+        }
+      } catch (e) {
+        // Local/offline fallback
+      }
     }
 
     // Execute multi-vector threat engine
-    const analysis = await window.analyzer.analyze(rawPayload, demoScenario);
+    const analysis = await window.analyzer.analyze(rawPayload, demoScenario, pageMetadata);
     this.currentAnalysis = analysis;
 
     if (overlay) overlay.style.display = "none";
@@ -560,6 +589,17 @@ class SentinelApp {
           cardBorder = "border-warn";
         }
 
+        const scriptBadge = c.scriptMetadata && c.scriptMetadata.detectedScripts && c.scriptMetadata.detectedScripts.length > 0
+          ? `<div style="margin-top: 0.6rem; display: flex; gap: 0.4rem; flex-wrap: wrap;">
+               <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--cyber-cyan); background: rgba(0, 245, 255, 0.08); border: 1px solid rgba(0, 245, 255, 0.25); padding: 0.15rem 0.5rem; border-radius: 4px;">
+                 <i class="fa-solid fa-language"></i> SCRIPT: ${c.scriptMetadata.detectedScripts.join(", ")}
+               </span>
+               <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--electric-violet); background: rgba(123, 47, 255, 0.08); border: 1px solid rgba(123, 47, 255, 0.25); padding: 0.15rem 0.5rem; border-radius: 4px;">
+                 <i class="fa-solid fa-flag"></i> ${c.scriptMetadata.language}
+               </span>
+             </div>`
+          : "";
+
         return `
           <div class="check-card ${cardBorder}">
             <div class="check-header">
@@ -567,6 +607,7 @@ class SentinelApp {
               ${statusBadge}
             </div>
             <p class="check-summary">${c.summary}</p>
+            ${scriptBadge}
           </div>
         `;
       }).join("");

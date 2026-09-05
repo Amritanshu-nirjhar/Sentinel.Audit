@@ -3,6 +3,14 @@
  * Evaluates QR payloads across 12 security vectors to produce a forensic verdict and 0-100 safety score.
  */
 
+// Resolve BrandKeywords module (browser global or Node.js require)
+let _BrandKeywords = typeof BrandKeywords !== "undefined" ? BrandKeywords : null;
+if (!_BrandKeywords && typeof require !== "undefined") {
+  try {
+    _BrandKeywords = require("./brandKeywords.js");
+  } catch (e) {}
+}
+
 class SentinelAnalyzer {
   constructor() {
     this.knownShorteners = [
@@ -66,7 +74,7 @@ class SentinelAnalyzer {
     return "PLAIN_TEXT";
   }
 
-  async analyze(rawPayload, demoScenarioOverride = null) {
+  async analyze(rawPayload, demoScenarioOverride = null, pageMetadata = null) {
     // If a demo scenario override is provided with known mock results, return structured verdict immediately
     if (demoScenarioOverride) {
       return this.formatDemoScenario(demoScenarioOverride, rawPayload);
@@ -79,6 +87,8 @@ class SentinelAnalyzer {
     let canonicalUrl = rawPayload;
     let redirectHops = 0;
     let explanationList = [];
+    let detectedScripts = [];
+    let multilingualMatch = null;
 
     // 1. UPI Payload Analysis
     if (payloadType === "UPI") {
@@ -87,16 +97,20 @@ class SentinelAnalyzer {
       checks.push(...upiRes.checks);
       explanationList.push(...upiRes.explanations);
       impersonatedBrand = upiRes.impersonatedBrand;
+      if (upiRes.detectedScripts) detectedScripts = upiRes.detectedScripts;
+      if (upiRes.multilingualMatch) multilingualMatch = upiRes.multilingualMatch;
     }
     // 2. URL Payload Analysis
     else if (payloadType === "URL") {
-      const urlRes = await this.analyzeUrl(rawPayload);
+      const urlRes = await this.analyzeUrl(rawPayload, pageMetadata);
       riskScore += urlRes.riskDelta;
       checks.push(...urlRes.checks);
       explanationList.push(...urlRes.explanations);
       canonicalUrl = urlRes.canonicalUrl;
       redirectHops = urlRes.redirectHops;
       impersonatedBrand = urlRes.impersonatedBrand;
+      if (urlRes.detectedScripts) detectedScripts = urlRes.detectedScripts;
+      if (urlRes.multilingualMatch) multilingualMatch = urlRes.multilingualMatch;
     }
     // 3. WIFI Payload Analysis
     else if (payloadType === "WIFI") {
@@ -149,6 +163,8 @@ class SentinelAnalyzer {
       canonicalUrl,
       redirectHops,
       impersonatedBrand,
+      detectedScripts,
+      multilingualMatch,
       checks,
       explanations: explanationList
     };
@@ -159,6 +175,8 @@ class SentinelAnalyzer {
     const checks = [];
     const explanations = [];
     let impersonatedBrand = null;
+    let upiScripts = [];
+    let upiMultiMatch = null;
 
     try {
       const parsedUrl = new URL(rawPayload);
@@ -168,7 +186,7 @@ class SentinelAnalyzer {
       const mc = parsedUrl.searchParams.get("mc") || "";
       const tn = parsedUrl.searchParams.get("tn") || "";
 
-      // Check 1: Brand vs VPA Mismatch
+      // Check 1: Brand vs VPA Mismatch (English baseline check)
       let detectedBrandInName = null;
       for (let b of this.brandSignatures) {
         if (pn.toLowerCase().includes(b.keys[0]) || pn.toLowerCase().includes(b.name.toLowerCase())) {
@@ -178,16 +196,41 @@ class SentinelAnalyzer {
         }
       }
 
+      // Extension: Multilingual check on UPI Payee Name and Note
+      const bk = typeof BrandKeywords !== "undefined" ? BrandKeywords : _BrandKeywords;
+      if (bk && bk.inspectMultilingualBrand) {
+        const titleScriptObjs = bk.detectScripts(pn);
+        const allScriptObjs = bk.detectScripts(`${pn} ${tn}`);
+        upiScripts = Array.from(new Set(allScriptObjs.map(s => s.name)));
+        
+        upiMultiMatch = bk.inspectMultilingualBrand({
+          title: pn,
+          description: tn,
+          domain: pa,
+          url: rawPayload
+        });
+
+        if (upiMultiMatch && upiMultiMatch.matched) {
+          if (!detectedBrandInName) {
+            detectedBrandInName = upiMultiMatch.brand;
+            impersonatedBrand = `${upiMultiMatch.brand} (${upiMultiMatch.languageName} / ${upiMultiMatch.script})`;
+          }
+        }
+      }
+
       const isPersonalHandle = /@(okaxis|ybl|paytm|oksbi|okhdfcbank|ibl|apl|axl)$/i.test(pa);
       const containsScamKeywords = /(fraud|fake|scam|discom|refund|billcollection)/i.test(pa);
 
       if (detectedBrandInName && isPersonalHandle) {
         riskDelta += 55;
+        const scriptDetail = upiMultiMatch && upiMultiMatch.script !== "Latin" 
+          ? ` (${upiMultiMatch.script} / ${upiMultiMatch.languageName} script: "${upiMultiMatch.matchedKeyword}")`
+          : "";
         checks.push({
           id: "brand_impersonation",
           title: "Merchant VPA Discrepancy",
           status: "FAIL",
-          summary: `Payee Name claims to be '${detectedBrandInName}', but routing address ('${pa}') is an unverified personal handle.`
+          summary: `Payee Name claims to be '${detectedBrandInName}'${scriptDetail}, but routing address ('${pa}') is an unverified personal handle.`
         });
         explanations.push(`High risk of physical sticker overlay: Payee displays as '${pn}' but transfers money to personal handle '${pa}'.`);
       } else if (detectedBrandInName) {
@@ -289,16 +332,18 @@ class SentinelAnalyzer {
       });
     }
 
-    return { riskDelta, checks, explanations, impersonatedBrand };
+    return { riskDelta, checks, explanations, impersonatedBrand, detectedScripts: upiScripts, multilingualMatch: upiMultiMatch };
   }
 
-  async analyzeUrl(rawPayload) {
+  async analyzeUrl(rawPayload, pageMetadata = null) {
     let riskDelta = 0;
     const checks = [];
     const explanations = [];
     let impersonatedBrand = null;
     let canonicalUrl = rawPayload;
     let redirectHops = 0;
+    let detectedScripts = [];
+    let multilingualMatch = null;
 
     try {
       const parsed = new URL(rawPayload);
@@ -393,7 +438,7 @@ class SentinelAnalyzer {
         });
       }
 
-      // Check 5: Brand Impersonation / Typosquatting
+      // Check 5: Brand Impersonation / Typosquatting (English baseline check)
       let matchedBrand = null;
       for (let b of this.brandSignatures) {
         const containsKey = b.keys.some(k => hostname.includes(k) || pathname.includes(k));
@@ -413,7 +458,87 @@ class SentinelAnalyzer {
           break;
         }
       }
-      if (!matchedBrand) {
+
+      // Check 5b: Multilingual Brand Impersonation & Unicode Script Detection (Hindi, Tamil, Telugu, Bengali, Marathi)
+      const bk = typeof BrandKeywords !== "undefined" ? BrandKeywords : _BrandKeywords;
+      let multiMatch = null;
+      if (bk && bk.inspectMultilingualBrand) {
+        const pageTitle = (pageMetadata && (pageMetadata.pageTitle || pageMetadata.title)) || "";
+        const metaDesc = (pageMetadata && (pageMetadata.metaDescription || pageMetadata.description)) || "";
+
+        // Unicode NFC Normalization
+        const normTitle = bk.normalizeUnicodeText(pageTitle);
+        const normDesc = bk.normalizeUnicodeText(metaDesc);
+
+        // Detect scripts in title specifically and overall payload
+        const titleScriptObjs = bk.detectScripts(normTitle);
+        const allScriptObjs = bk.detectScripts(`${normTitle} ${normDesc} ${rawPayload}`);
+        detectedScripts = Array.from(new Set(allScriptObjs.map(s => s.name)));
+
+        // Run multilingual brand inspection
+        multiMatch = bk.inspectMultilingualBrand({
+          title: normTitle,
+          description: normDesc,
+          domain: hostname,
+          url: rawPayload
+        });
+        multilingualMatch = multiMatch;
+
+        if (multiMatch && multiMatch.matched) {
+          if (!multiMatch.isLegitimateDomain) {
+            // Multilingual brand keyword match on non-legitimate domain: +35 points toward Malicious threshold
+            riskDelta += 35;
+            impersonatedBrand = `${multiMatch.brand} (${multiMatch.languageName} / ${multiMatch.script})`;
+
+            const brandCard = {
+              id: "brand_impersonation",
+              title: "Multilingual Brand Spoofing Alert",
+              status: "FAIL",
+              summary: `Deceptive mimicry of '${multiMatch.brand}' detected in ${multiMatch.script} (${multiMatch.languageName}) script: "${multiMatch.matchedKeyword}". Host '${hostname}' is an unverified phishing domain.`,
+              scriptMetadata: {
+                detectedScripts,
+                titleScripts: titleScriptObjs.map(s => s.name),
+                language: multiMatch.languageName,
+                matchedKeyword: multiMatch.matchedKeyword,
+                matchLocation: multiMatch.matchLocation
+              }
+            };
+
+            const existingIdx = checks.findIndex(c => c.id === "brand_impersonation");
+            if (existingIdx >= 0) {
+              if (checks[existingIdx].status === "FAIL") {
+                checks[existingIdx].title = "Multilingual Brand Spoofing Alert";
+                checks[existingIdx].summary += ` Also mimics ${multiMatch.brand} in ${multiMatch.languageName} (${multiMatch.script} script: "${multiMatch.matchedKeyword}").`;
+                checks[existingIdx].scriptMetadata = brandCard.scriptMetadata;
+              } else {
+                checks[existingIdx] = brandCard;
+              }
+            } else {
+              checks.push(brandCard);
+            }
+
+            explanations.push(
+              `Multilingual phishing indicator: ${multiMatch.matchLocation === "title" ? "Page title specifically" : "Payload"} contains ${multiMatch.languageName} brand keyword '${multiMatch.matchedKeyword}' (${multiMatch.script} script) targeting '${multiMatch.brand}' on unauthorized host '${hostname}'.`
+            );
+          } else {
+            // Official legitimate domain in Indic language
+            const existingIdx = checks.findIndex(c => c.id === "brand_impersonation");
+            const cleanSummary = `Verified authentic regional ${multiMatch.languageName} portal for '${multiMatch.brand}' on official domain (${hostname}).`;
+            if (existingIdx >= 0) {
+              checks[existingIdx].summary = cleanSummary;
+            } else {
+              checks.push({
+                id: "brand_impersonation",
+                title: "Brand Verification",
+                status: "PASS",
+                summary: cleanSummary
+              });
+            }
+          }
+        }
+      }
+
+      if (!matchedBrand && (!multiMatch || !multiMatch.matched)) {
         checks.push({
           id: "brand_impersonation",
           title: "Brand Mimicry Check",
@@ -451,7 +576,7 @@ class SentinelAnalyzer {
       });
     }
 
-    return { riskDelta, checks, explanations, canonicalUrl, redirectHops, impersonatedBrand };
+    return { riskDelta, checks, explanations, canonicalUrl, redirectHops, impersonatedBrand, detectedScripts, multilingualMatch };
   }
 
   analyzeWifi(rawPayload) {
@@ -546,6 +671,37 @@ class SentinelAnalyzer {
   }
 
   formatDemoScenario(scenario, rawPayload) {
+    const bk = typeof BrandKeywords !== "undefined" ? BrandKeywords : _BrandKeywords;
+    let detectedScripts = [];
+    let multilingualMatch = null;
+    let brandName = scenario.title.includes("HDFC") ? "HDFC Bank" : (scenario.title.includes("SBI") ? "State Bank of India" : null);
+
+    if (bk && bk.inspectMultilingualBrand) {
+      const allText = `${scenario.title || ""} ${scenario.description || ""} ${scenario.payload || ""}`;
+      const scriptObjs = bk.detectScripts(allText);
+      detectedScripts = Array.from(new Set(scriptObjs.map(s => s.name)));
+
+      let domain = "";
+      try {
+        if (scenario.payload && scenario.payload.includes("://")) {
+          domain = new URL(scenario.payload).hostname;
+        } else if (scenario.finalUrl && scenario.finalUrl.includes("://")) {
+          domain = new URL(scenario.finalUrl).hostname;
+        }
+      } catch (e) {}
+
+      multilingualMatch = bk.inspectMultilingualBrand({
+        title: scenario.title,
+        description: scenario.description,
+        domain: domain,
+        url: scenario.payload
+      });
+
+      if (multilingualMatch && multilingualMatch.matched) {
+        brandName = `${multilingualMatch.brand} (${multilingualMatch.languageName} / ${multilingualMatch.script})`;
+      }
+    }
+
     const checks = [
       {
         id: "domain_reputation",
@@ -573,9 +729,11 @@ class SentinelAnalyzer {
       },
       {
         id: "brand_impersonation",
-        title: "Brand Spoofing Inspection",
+        title: multilingualMatch && multilingualMatch.matched ? "Multilingual Brand Spoofing Alert" : "Brand Spoofing Inspection",
         status: scenario.verdict === "MALICIOUS" ? "FAIL" : "PASS",
-        summary: scenario.threatDetails[2] || "Authentic brand identity verified with zero spoofing."
+        summary: scenario.threatDetails[2] || (multilingualMatch && multilingualMatch.matched
+          ? `Deceptive mimicry of '${multilingualMatch.brand}' in ${multilingualMatch.script} (${multilingualMatch.languageName}): "${multilingualMatch.matchedKeyword}".`
+          : "Authentic brand identity verified with zero spoofing.")
       },
       {
         id: "payload_safety",
@@ -592,11 +750,18 @@ class SentinelAnalyzer {
       verdict: scenario.verdict,
       canonicalUrl: scenario.finalUrl || scenario.payload,
       redirectHops: scenario.finalUrl ? 2 : 0,
-      impersonatedBrand: scenario.title.includes("HDFC") ? "HDFC Bank" : (scenario.title.includes("SBI") ? "State Bank of India" : null),
+      impersonatedBrand: brandName,
+      detectedScripts,
+      multilingualMatch,
       checks,
       explanations: scenario.threatDetails
     };
   }
 }
 
-window.analyzer = new SentinelAnalyzer();
+if (typeof window !== "undefined") {
+  window.analyzer = new SentinelAnalyzer();
+}
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { SentinelAnalyzer };
+}

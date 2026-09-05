@@ -244,6 +244,86 @@ const DEMO_SCENARIOS = [
       "VPA handle 'discom.billcollection88@oksbi' is an unverified individual VPA mimicking a power discom.",
       "Urgency trigger text in transaction note ('Immediate Disconnection Notice')."
     ]
+  },
+  {
+    id: "demo-hindi-sbi",
+    title: "भारतीय स्टेट बैंक - तत्काल केवाईसी सत्यापन",
+    category: "Multilingual Phishing",
+    verdict: "MALICIOUS",
+    score: 8,
+    badgeText: "Hindi Devanagari Quishing",
+    icon: "fa-triangle-exclamation",
+    payload: "https://sbi-yono-kyc-update.xyz/login.php",
+    description: "एसबीआई नेट बैंकिंग एवं योनो उपयोगकर्ताओं को लक्षित करने वाला फ़िशिंग क्यूआर कोड।",
+    threatDetails: [
+      "Devanagari script detected in page title: 'भारतीय स्टेट बैंक'.",
+      "Multilingual brand impersonation: Targets State Bank of India without sbi.co.in authorization.",
+      "Counterfeit domain hosted on high-risk .xyz TLD."
+    ]
+  },
+  {
+    id: "demo-tamil-hdfc",
+    title: "HDFC வங்கி - உடனடியாக உள்நுழைக",
+    category: "Multilingual Phishing",
+    verdict: "MALICIOUS",
+    score: 6,
+    badgeText: "Tamil Regional Quishing",
+    icon: "fa-building-columns",
+    payload: "https://hdfc-netbanking-verify.club/tamil/auth.html",
+    description: "HDFC வங்கி வாடிக்கையாளர்களின் நெட்பேங்கிங் விவரங்களை திருடும் மோசடி தளம்.",
+    threatDetails: [
+      "Tamil script detected in title: 'HDFC வங்கி'.",
+      "Multilingual brand impersonation: Spoofs HDFC Bank on non-official .club domain.",
+      "Zero SSL cryptographic EV identity."
+    ]
+  },
+  {
+    id: "demo-telugu-gpay",
+    title: "గూగుల్ పే - ₹2000 క్యాష్‌బ్యాక్ క్లెయిమ్",
+    category: "Multilingual Phishing",
+    verdict: "MALICIOUS",
+    score: 12,
+    badgeText: "Telugu Reward Trap",
+    icon: "fa-coins",
+    payload: "https://gpay-rewards-claim2026.work/telugu/scratch.php",
+    description: "గూగుల్ పే వినియోగదారుల యూపీఐ పిన్ దొంగిలించడానికి రూపొందించిన నకిలీ ఆఫర్.",
+    threatDetails: [
+      "Telugu script detected in title: 'గూగుల్ పే'.",
+      "Multilingual brand impersonation: Deceptive mimicry of Google Pay / Tez.",
+      "Obfuscated scratch-card lure harvesting financial credentials."
+    ]
+  },
+  {
+    id: "demo-bengali-irctc",
+    title: "আইআরসিটিসি তৎকাল টিকিট রিফান্ড পোর্টাল",
+    category: "Multilingual Phishing",
+    verdict: "MALICIOUS",
+    score: 9,
+    badgeText: "Bengali Railway Scam",
+    icon: "fa-train",
+    payload: "https://irctc-refund-service.rest/bengali/refund.html",
+    description: "ভারতীয় রেলের আইআরসিটিসি পোর্টাল নকল করে তৈরি করা জাল টিকিট রিফান্ড সাইট।",
+    threatDetails: [
+      "Bengali script detected in title: 'আইআরসিটিসি তৎকাল টিকিট'.",
+      "Multilingual brand impersonation: Mimics official IRCTC railway portal.",
+      "Domain registered on low-cost .rest TLD."
+    ]
+  },
+  {
+    id: "demo-marathi-discom",
+    title: "महावितरण वीज बिल - त्वरित भरा",
+    category: "Multilingual Phishing",
+    verdict: "MALICIOUS",
+    score: 11,
+    badgeText: "Marathi Utility Scam",
+    icon: "fa-bolt",
+    payload: "upi://pay?pa=mahavitaran.pay89@okhdfcbank&pn=%E0%A4%AD%E0%A4%BE%E0%A4%B0%E0%A4%A4%E0%A5%80%E0%A4%AF%20%E0%A4%B8%E0%A5%8D%E0%A4%9F%E0%A5%87%E0%A4%9F%20%E0%A4%AC%E0%A5%85%E0%A4%82%E0%A4%95&am=4850.00&cu=INR&tn=%E0%A4%B5%E0%A5%80%E0%A4%9C%20%E0%A4%AA%E0%A5%81%E0%A4%B0%E0%A4%B5%E0%A4%A0%E0%A4%BE%20%E0%A4%96%E0%A4%82%E0%A4%A1%E0%A4%BF%E0%A4%A4",
+    description: "महावितरण वीज पुरवठा खंडित करण्याची भीती दाखवून फसवणूक करणारा यूपीआय क्यूआर कोड.",
+    threatDetails: [
+      "Devanagari script detected in Marathi utility pretext.",
+      "Payee Name spoofing: Claims to be 'भारतीय स्टेट बँक' on personal VPA.",
+      "Preset extortion amount ₹4,850 with urgency note."
+    ]
   }
 ];
 

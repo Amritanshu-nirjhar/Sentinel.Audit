@@ -15,6 +15,12 @@ import sys
 import datetime
 import socket
 import ssl
+import re
+
+try:
+    import brand_keywords
+except ImportError:
+    brand_keywords = None
 
 PORT = 8000
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
@@ -247,6 +253,39 @@ class SentinelHandler(http.server.SimpleHTTPRequestHandler):
         except Exception:
             pass
 
+        # Extract page title, meta description & favicon if HTML
+        page_title = ""
+        meta_description = ""
+        detected_scripts = []
+        brand_check = None
+
+        if not is_direct_download and ("text/html" in content_type.lower() or not content_type):
+            try:
+                get_req = urllib.request.Request(current_url, headers=headers, method="GET")
+                with opener.open(get_req, timeout=3.0) as resp:
+                    html_chunk = resp.read(65536).decode("utf-8", errors="ignore")
+                    title_match = re.search(r"<title[^>]*>(.*?)</title>", html_chunk, re.IGNORECASE | re.DOTALL)
+                    if title_match:
+                        page_title = title_match.group(1).strip()
+                    desc_match = re.search(r'<meta[^>]+name=["\']description["\'][^>]+content=["\']([^"\']*)["\']', html_chunk, re.IGNORECASE)
+                    if not desc_match:
+                        desc_match = re.search(r'<meta[^>]+content=["\']([^"\']*)["\'][^>]+name=["\']description["\']', html_chunk, re.IGNORECASE)
+                    if desc_match:
+                        meta_description = desc_match.group(1).strip()
+            except Exception:
+                pass
+
+        if brand_keywords:
+            page_title = brand_keywords.normalize_unicode_text(page_title)
+            meta_description = brand_keywords.normalize_unicode_text(meta_description)
+            detected_scripts = brand_keywords.get_script_names(f"{page_title} {meta_description} {current_url}")
+            brand_check = brand_keywords.inspect_multilingual_brand({
+                "title": page_title,
+                "description": meta_description,
+                "domain": domain,
+                "url": current_url
+            })
+
         return {
             "initialUrl": target_url,
             "finalUrl": current_url,
@@ -256,13 +295,21 @@ class SentinelHandler(http.server.SimpleHTTPRequestHandler):
             "resolvedIp": ip_addr,
             "contentType": content_type,
             "isDirectDownload": is_direct_download,
-            "status": final_status
+            "status": final_status,
+            "pageTitle": page_title,
+            "metaDescription": meta_description,
+            "detectedScripts": detected_scripts,
+            "brandCheck": brand_check
         }
 
 
+class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+    daemon_threads = True
+    allow_reuse_address = True
+
 def run_server():
     server_address = ("", PORT)
-    httpd = socketserver.TCPServer(server_address, SentinelHandler)
+    httpd = ThreadedTCPServer(server_address, SentinelHandler)
     print(f"🛡️  Sentinel.Audit Engine operational on port {PORT}...")
     print(f"📡  Access UI at: http://localhost:{PORT}")
     try:
