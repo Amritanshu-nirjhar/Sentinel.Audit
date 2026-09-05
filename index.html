@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Sentinel.Audit // QRShield — Quishing Threat Defense & Cyber Crime Reporting</title>
+  <meta name="description" content="High-fidelity cybersecurity platform for real-time QR code forensic inspection, UPI payment tampering detection, and instant reporting to Indian Cyber Crime Cells.">
+  <meta name="theme-color" content="#060919">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sentinel.Audit">
+
+  <!-- OpenGraph / Meta -->
+  <meta property="og:title" content="Sentinel.Audit // Quishing Threat Defense">
+  <meta property="og:description" content="See what's really inside the code before it scans you. Instant verdict & cyber crime cell reporting.">
+  <meta property="og:type" content="website">
+
+  <!-- External Styles & Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation & Live Telemetry Bar -->
+  <nav class="top-nav" aria-label="Main Navigation">
+    <div class="brand-wrapper">
+      <div class="brand-icon-shield">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <div class="brand-title-group">
+        <div class="brand-logo-text">SENTINEL<span class="cyan">.AUDIT</span></div>
+        <span class="brand-subtext">Quishing Forensics & Citizen Defense</span>
+      </div>
+    </div>
+
+    <div class="nav-telemetry-center">
+      <div class="telemetry-stat-item">
+        <span class="live-indicator"></span>
+        <span class="stat-label">System:</span>
+        <span class="stat-val">THREAT-DEFENSE ONLINE</span>
+      </div>
+      <div class="telemetry-stat-item">
+        <span class="stat-label">Scans Intercepted:</span>
+        <span class="stat-val" id="stat-total-scans">3,482</span>
+      </div>
+      <div class="telemetry-stat-item">
+        <span class="stat-label">Threats Neutralized:</span>
+        <span class="stat-val text-malicious" id="stat-threats-caught">489</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <button class="btn-nav-audio active" id="btn-audio-toggle" title="Toggle Synthesizer Feedback">
+        <i class="fa-solid fa-volume-high"></i> AUDIO ON
+      </button>
+      <a href="#threat-map-section" class="btn-nav-audio">
+        <i class="fa-solid fa-satellite-dish"></i> RADAR MAP
+      </a>
+      <div class="telemetry-stat-item" style="border-left: 1px solid var(--border-glass); padding-left: 0.85rem;">
+        <span class="stat-label">Helpline:</span>
+        <span class="stat-val" style="color: var(--alert-red);">1930</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero & Problem Statement -->
+  <header class="hero-instrument">
+    <div class="hero-header-center">
+      <div class="hero-tag">
+        <i class="fa-solid fa-triangle-exclamation"></i> CRITICAL CYBER DEFENSE INITIATIVE // 2026
+      </div>
+      <h1 class="hero-title">
+        See What's Really Inside The Code <br>
+        <span class="glow-cyan">Before It Scans You.</span>
+      </h1>
+      <p class="hero-subtitle">
+        QR codes are visually opaque. A human cannot distinguish an authentic merchant QR from an overlaid phishing trap.
+        Sentinel.Audit inspects raw payloads, traces obfuscated redirects, unmasks UPI sticker tampering, and bridges verified evidence directly to Indian Cyber Crime Cells.
+      </p>
+    </div>
+
+    <!-- Scanner HUD Instrument -->
+    <div class="scanner-hud-container" id="scanner-section">
+      <!-- HUD Header Tabs -->
+      <div class="hud-header">
+        <div class="hud-tab-group">
+          <button class="hud-tab-btn active" data-tab="optical" id="tab-btn-optical">
+            <i class="fa-solid fa-camera"></i> Live Optical Sensor
+          </button>
+          <button class="hud-tab-btn" data-tab="dropzone" id="tab-btn-dropzone">
+            <i class="fa-solid fa-upload"></i> Digital Dropzone & Paste
+          </button>
+          <button class="hud-tab-btn" data-tab="demo" id="tab-btn-demo">
+            <i class="fa-solid fa-microchip"></i> Curated Demo Matrix (15 Attacks)
+          </button>
+        </div>
+        <div class="hud-status-badge">
+          <i class="fa-solid fa-circle-nodes"></i> JSQR ENGINE v1.4.0
+        </div>
+      </div>
+
+      <!-- Viewport Body -->
+      <div class="hud-viewport-body">
+        
+        <!-- Tab 1: Optical Camera Viewfinder -->
+        <div id="tab-optical" class="viewfinder-frame">
+          <div class="viewfinder-wrapper">
+            <video id="scanner-video" playsinline></video>
+            <!-- Holographic Targeting Reticle -->
+            <div class="viewfinder-reticle">
+              <div class="corner corner-tl"></div>
+              <div class="corner corner-tr"></div>
+              <div class="corner corner-bl"></div>
+              <div class="corner corner-br"></div>
+              <div class="reticle-laser-line"></div>
+              <div class="reticle-center-crosshair"></div>
+              <div class="reticle-status-label" id="reticle-status-text">OPTICAL SENSOR STANDBY</div>
+            </div>
+          </div>
+          <div class="hud-camera-controls">
+            <button class="btn-hud-primary" id="btn-start-camera">
+              <i class="fa-solid fa-camera"></i> Engage Optical Sensor
+            </button>
+          </div>
+        </div>
+
+        <!-- Tab 2: Digital Dropzone & Clipboard Paste -->
+        <div id="tab-dropzone" style="display: none; width: 100%;">
+          <div style="display: flex; justify-content: center;">
+            <div class="dropzone-box" id="scanner-dropzone">
+              <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+              <h3 class="dropzone-prompt">Drop QR Image Here or Click to Browse</h3>
+              <p class="dropzone-sub">Supports PNG, JPG, WebP, SVG screenshots from desktop or mobile</p>
+              <span class="dropzone-chip"><i class="fa-solid fa-paste"></i> Tip: Press Ctrl+V / Cmd+V to paste any copied screenshot</span>
+              <input type="file" id="qr-file-input" accept="image/*" style="display: none;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Curated Demo Test Matrix -->
+        <div id="tab-demo" style="display: none; width: 100%;" class="demo-matrix-section">
+          <div class="demo-filter-row">
+            <div>
+              <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">Curated Hackathon Attack Scenarios</h3>
+              <p style="font-size: 0.82rem; color: var(--text-muted);">One-click test vectors simulating real Indian banking phishing, physical sticker tampering, and APK trojan drops.</p>
+            </div>
+            <div class="demo-filter-chips">
+              <button class="demo-filter-chip active" data-category="ALL">All Scenarios</button>
+              <button class="demo-filter-chip" data-category="MALICIOUS">Malicious (High Risk)</button>
+              <button class="demo-filter-chip" data-category="UPI">UPI Tampering</button>
+              <button class="demo-filter-chip" data-category="SAFE">Safe / Verified</button>
+            </div>
+          </div>
+          <div class="demo-grid" id="demo-scenarios-grid">
+            <!-- Populated dynamically via demo_data.js -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Forensic Inspection Deck (Results HUD) -->
+  <main class="forensic-deck" id="forensic-deck">
+    <div class="deck-container">
+      <div class="deck-header-row">
+        <div class="deck-title-group">
+          <div class="deck-icon-scanner">
+            <i class="fa-solid fa-fingerprint"></i>
+          </div>
+          <div>
+            <h2 class="deck-title">Forensic Payload Telemetry</h2>
+            <p style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);">Multi-vector threat heuristics & vulnerability breakdown</p>
+          </div>
+        </div>
+        <div class="verdict-banner-wrap">
+          <div class="verdict-badge verdict-safe" id="verdict-badge">
+            <i class="fa-solid fa-circle-check"></i> VERDICT: SAFE
+          </div>
+        </div>
+      </div>
+
+      <!-- Verdict Radial Gauge & Summary Hero -->
+      <div class="verdict-hero-panel">
+        <div class="gauge-wrapper">
+          <svg class="gauge-svg" viewBox="0 0 120 120">
+            <circle class="gauge-bg-circle" cx="60" cy="60" r="54"></circle>
+            <circle class="gauge-progress-circle gauge-safe" id="gauge-progress-circle" cx="60" cy="60" r="54"></circle>
+          </svg>
+          <div class="gauge-center-content">
+            <div class="gauge-score-value" id="gauge-score-value">98</div>
+            <div class="gauge-score-label">Safety Score</div>
+          </div>
+        </div>
+
+        <div class="verdict-details-content">
+          <h3 class="verdict-summary text-safe" id="verdict-title-text">
+            Payload is cryptographically verified and safe to execute.
+          </h3>
+          <ul class="threat-explanations-list" id="threat-explanations-list">
+            <!-- Filled dynamically -->
+          </ul>
+        </div>
+      </div>
+
+      <!-- Telemetry Metadata Chips Bar -->
+      <div class="telemetry-meta-bar">
+        <div class="meta-chip">
+          <div class="meta-chip-label">Payload Type</div>
+          <div class="meta-chip-value" id="telemetry-type">URL</div>
+        </div>
+        <div class="meta-chip">
+          <div class="meta-chip-label">Redirect Depth</div>
+          <div class="meta-chip-value" id="telemetry-hops">0 Hops</div>
+        </div>
+        <div class="meta-chip">
+          <div class="meta-chip-label">Brand Impersonation</div>
+          <div class="meta-chip-value" id="telemetry-brand">None Detected</div>
+        </div>
+        <div class="meta-chip">
+          <div class="meta-chip-label">Canonical Destination</div>
+          <div class="meta-chip-value" id="telemetry-destination">https://...</div>
+        </div>
+      </div>
+
+      <!-- Six Forensic Security Checkcards Grid -->
+      <div class="security-checks-grid" id="security-checks-grid">
+        <!-- Filled dynamically -->
+      </div>
+
+      <!-- Raw Payload & SHA-256 Digest Card -->
+      <div class="raw-payload-card">
+        <div class="raw-payload-header">
+          <span class="raw-payload-title"><i class="fa-solid fa-code"></i> Raw Decoded Payload</span>
+          <span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim);">UTF-8 STRING</span>
+        </div>
+        <div class="raw-payload-box" id="raw-payload-code"></div>
+        <div class="sha256-row">
+          <span>SHA-256 Fingerprint:</span>
+          <span class="sha256-val" id="payload-sha256">Computing...</span>
+        </div>
+      </div>
+
+      <!-- Report to Cyber Crime Cell CTA Banner (Shown if Suspicious or Malicious) -->
+      <div class="report-cta-container" id="report-cta-container" style="display: none;">
+        <div class="report-cta-info">
+          <h3><i class="fa-solid fa-shield-cat"></i> File Instant Incident Report to Cyber Crime Cell</h3>
+          <p>
+            Tampered payment QRs and phishing links are criminal offences under IT Act 2000 (Section 66D/43).
+            Sentinel.Audit locates your nearest cyber police station, compiles a stamped FIR-ready evidence dossier, and pre-fills national reporting portal formats.
+          </p>
+        </div>
+        <button class="btn-open-report" id="btn-open-report-modal">
+          <i class="fa-solid fa-bullhorn"></i> File Incident Report
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Community Threat Radar Map Section -->
+  <section class="threat-radar-section" id="threat-map-section">
+    <div class="section-header-row">
+      <div class="section-title-wrap">
+        <div class="hero-tag" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-radar"></i> Live Threat Telemetry</div>
+        <h2>Community QR Tampering Radar</h2>
+        <p>Anonymized cluster map of physical sticker overlays, fraudulent parking QRs, and rogue AP traps.</p>
+      </div>
+      <div class="radar-controls-wrap">
+        <button class="radar-filter-btn active" data-filter="ALL">All Alerts</button>
+        <button class="radar-filter-btn" data-filter="UPI">UPI Overlays</button>
+        <button class="radar-filter-btn" data-filter="APK">Malware APKs</button>
+        <button class="radar-filter-btn" data-filter="PHISHING">Phishing Portals</button>
+        <button class="radar-filter-btn" id="btn-configure-map" title="Optional: Custom Mapbox token"><i class="fa-solid fa-key"></i> Key (Optional)</button>
+      </div>
+    </div>
+
+    <div class="radar-map-card">
+      <div class="city-chips-bar">
+        <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim); margin-right: 0.5rem;">QUICK ZOOM:</span>
+        <button class="city-chip active" data-city="india">All India</button>
+        <button class="city-chip" data-city="delhi">New Delhi (NCR)</button>
+        <button class="city-chip" data-city="mumbai">Mumbai (BKC)</button>
+        <button class="city-chip" data-city="bengaluru">Bengaluru</button>
+        <button class="city-chip" data-city="hyderabad">Hyderabad</button>
+        <button class="city-chip" data-city="pune">Pune</button>
+      </div>
+      <div id="threat-map-container"></div>
+    </div>
+  </section>
+
+  <!-- Historical Scan Audit Log -->
+  <section class="history-section">
+    <div class="history-card">
+      <div class="history-header">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <i class="fa-solid fa-clock-rotate-left" style="color: var(--cyber-cyan);"></i>
+          <h3 style="font-size: 1.1rem;">Local Scan History & Audit Log</h3>
+        </div>
+        <button class="btn-clear-history" id="btn-clear-history">
+          <i class="fa-solid fa-trash-can"></i> Purge Log
+        </button>
+      </div>
+      <div class="table-responsive">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Scan ID</th>
+              <th>Time</th>
+              <th>Decoded Content</th>
+              <th>Type</th>
+              <th>Verdict / Score</th>
+            </tr>
+          </thead>
+          <tbody id="history-log-table">
+            <!-- Filled dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Incident Reporting Modal (FIR Complaint Sheet) -->
+  <div class="report-modal-backdrop" id="report-modal" role="dialog" aria-modal="true">
+    <div class="report-modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i class="fa-solid fa-file-shield"></i>
+          <div>
+            <h3 class="modal-title">Official Cyber Crime Incident Complaint</h3>
+            <span class="modal-subtitle">IT ACT 2000 (SEC 66D, 43) EVIDENCE DOSSIER</span>
+          </div>
+        </div>
+        <button class="btn-close-modal" id="btn-close-modal" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="incident-ref-banner">
+          <div>
+            <div class="ref-label">INCIDENT REFERENCE ID</div>
+            <div class="ref-val" id="modal-incident-id">SENTINEL-IN-2026-PENDING</div>
+          </div>
+          <div>
+            <div class="ref-label">FORENSIC VERDICT</div>
+            <div class="ref-val" style="color: var(--alert-red);" id="modal-verdict-tag">MALICIOUS</div>
+          </div>
+        </div>
+
+        <div class="station-selector-group">
+          <label class="form-label" for="incident-city-select">Select Jurisdictional Cyber Police Cell:</label>
+          <select id="incident-city-select" class="sentinel-select">
+            <!-- Filled dynamically with CYBER_CELL_DIRECTORY -->
+          </select>
+        </div>
+
+        <div class="nearest-station-card">
+          <div class="station-name" id="modal-station-name">Special Cell Cyber Crime Unit (IFSO)</div>
+          <div class="station-details">
+            <span id="modal-station-address"><i class="fa-solid fa-location-dot"></i> Sector 17, Dwarka, New Delhi - 110078</span>
+            <span><i class="fa-solid fa-phone"></i> Emergency Helpline: <strong id="modal-station-helpline" style="color: #FFFFFF;">1930</strong></span>
+            <span><i class="fa-solid fa-envelope"></i> Nodal Officer Email: <span id="modal-station-email">cybercell-delhi@nic.in</span></span>
+          </div>
+        </div>
+
+        <div class="evidence-preview-card">
+          <div class="evidence-row">
+            <span class="evidence-key">Raw Evidence:</span>
+            <span class="evidence-val" id="modal-payload-preview">https://...</span>
+          </div>
+          <div class="evidence-row">
+            <span class="evidence-key">SHA-256 Hash:</span>
+            <span class="evidence-val" style="color: var(--electric-violet);" id="modal-sha256-hash">...</span>
+          </div>
+          <div class="evidence-row">
+            <span class="evidence-key">Statutory Acts:</span>
+            <span class="evidence-val" style="color: var(--text-dim);">Section 66D IT Act (Impersonation), Section 43 (Computer Tampering), IPC 420 (Cheating)</span>
+          </div>
+        </div>
+
+        <div class="modal-actions-row">
+          <button class="btn-modal-action btn-copy" id="btn-copy-portal-text">
+            <i class="fa-solid fa-copy"></i> Copy Portal Text (cybercrime.gov.in)
+          </button>
+          <button class="btn-modal-action btn-dispatch" id="btn-submit-report">
+            <i class="fa-solid fa-tower-broadcast"></i> Dispatch to Threat Radar
+          </button>
+          <button class="btn-modal-action btn-pdf" id="btn-download-pdf">
+            <i class="fa-solid fa-file-pdf"></i> Download Official Complaint PDF (FIR)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Telemetry Phase Loading Overlay -->
+  <div class="analysis-telemetry-overlay" id="analysis-telemetry-overlay">
+    <div class="telemetry-radar-spinner"></div>
+    <div class="telemetry-phase-text" id="telemetry-phase-text">
+      DECOUPLING QR MODULE GRID & CORRECTION BITS...
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="sentinel-footer">
+    <p>SENTINEL.AUDIT // MILITARY-GRADE QUISHING DEFENSE SYSTEM — HACKATHON 2026 EDITION</p>
+    <p style="margin-top: 0.4rem; color: var(--text-dim);">Designed & Built for Public Cyber Resilience & Zero-Trust Payment Verification.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/demo_data.js"></script>
+  <script src="js/analyzer.js"></script>
+  <script src="js/reporting.js"></script>
+  <script src="js/threat_map.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
