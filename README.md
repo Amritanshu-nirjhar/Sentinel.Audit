@@ -1,4 +1,4 @@
-# 🛡️ Sentinel.Audit (QRShield)
+# 🛡️ Sentinel.Audit 
 
 <p align="center">
   <img src="assets/logo.jpg" alt="Sentinel.Audit Cyber Shield Logo" width="180" style="border-radius: 24px; box-shadow: 0 0 40px rgba(0, 245, 255, 0.4);">
