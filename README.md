@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  A military-grade, digital instrument engineered to inspect, decode, and analyze QR codes before execution — neutralizing Quishing (QR Phishing), UPI payment tampering, and malware droppers with an instant reporting bridge to Indian Cyber Crime Cells.
+  An enterprise-grade, zero-trust cybersecurity suite engineered to inspect, decode, and analyze QR codes before execution — neutralizing Quishing (QR Phishing), UPI payment tampering, and malware droppers with an instant reporting bridge to Indian Cyber Crime Cells.
 </p>
 
 <p align="center">
@@ -48,54 +48,61 @@ Sentinel.Audit provides a real-time forensic inspection sandbox for any QR code,
 
 ---
 
-## 🎨 Visual Design & Command-Center Aesthetic
+## 🎨 Visual Design & Executive Aesthetic
 
-Built as a high-fidelity **"digital instrument"** adhering to modern cybersecurity command-center aesthetics:
+Engineered as a state-of-the-art **executive cybersecurity suite** adhering to modern enterprise design standards (Linear, Apple Security, Vercel) with physical specular top-bevel highlights:
 
-| Role | Color Name | Hex Code | Purpose |
+| Role | Color Name | Hex / Gradient | Purpose |
 | :--- | :--- | :--- | :--- |
-| **Primary Background** | Deep Space Navy | `#060919` / `#0A0E27` | High-contrast tactical foundation |
-| **Primary Accent** | Cyber Cyan | `#00F5FF` | Reticle borders, telemetry data, active states |
-| **Secondary Accent** | Electric Violet | `#7B2FFF` | Hashes, encryption markers, depth badges |
-| **Verified Safe** | Neon Green | `#00FF88` | Legitimate verified merchants & passes |
-| **Warning** | Amber Warning | `#FFB800` | Unencrypted protocols, atypical fixed amounts |
-| **Malicious Alert** | Crimson Red | `#FF3B3B` | Quishing, tampered UPIs, trojan droppers |
-| **Typography** | Space Grotesk + JetBrains Mono | — | High-tech headings & monospace forensics |
+| **Canvas Substrate** | Deep Obsidian Slate | `#070B14` / `#0B1120` | Zero-glare, high-contrast dark foundation |
+| **Card & Panel Surfaces** | Brushed Titanium Navy | `#131B2E` | Physical depth with `inset 0 1px 0 rgba(255,255,255,0.08)` bevel |
+| **Inner Well / Payloads** | Recessed Obsidian Void | `#070D1A` | High-contrast monospace code & payload inspection |
+| **Primary Accent** | Electric Ice Cyan | `#22D3EE` → `#06B6D4` → `#0284C7` | Multi-stop gradient for CTAs, targeting reticle, and focus rings |
+| **Verified Safe** | Emerald Mint | `#34D399` / `#10B981` | Cryptographically verified merchants & passing audits |
+| **Warning** | Warm Amber | `#FBBF24` | Unencrypted protocols, atypical fixed transaction amounts |
+| **Threat Alert** | Coral Red | `#F87171` | Quishing, tampered UPI handles, and trojan droppers |
+| **Typography** | Inter & JetBrains Mono | — | Variable optical weight headings & monospace telemetry |
 
 ---
 
 ## 🔬 Key Architectural Features
 
-### 1. Optical Viewfinder with Holographic HUD
+### 1. 3D WebGL Cryptographic Monolith & Spatial Engine (`js/hero3d.js`)
+- Real-time Three.js spatial viewport featuring a physically-rendered (`metalness: 0.85`, `roughness: 0.18`) titanium monolith.
+- Procedural cryptographic QR substrate with ice cyan finder markers and microscopic blueprint grid.
+- Dual concentric counter-rotating gyroscopic defense rings responding dynamically to mouse parallax and orientation.
+- Razor-thin holographic scan laser sweeping the monolith with 800-particle ambient starfield.
+
+### 2. Optical Viewfinder with Executive HUD
 - Real-time webcam and smartphone camera integration using `jsQR`.
 - Native mobile support: Automatically requests `facingMode: "environment"` for phone rear cameras.
 - Animated holographic targeting reticle with corner brackets, crosshairs, and a sweeping laser beam.
 - Built-in Web Audio API synthesizer producing tactical click, radar chirp, and alarm audio feedback with zero external sound files.
 
-### 2. Digital Dropzone & Clipboard Paste
+### 3. Digital Dropzone & Clipboard Paste
 - Drag-and-drop QR image files directly into the analyzer.
 - Native `Ctrl+V` / `Cmd+V` clipboard paste support for instant verification of screenshots from WhatsApp, SMS, or food delivery apps.
 
-### 3. Multi-Vector Forensic Scoring Engine (`js/analyzer.js`)
+### 4. Multi-Vector Forensic Scoring Engine (`js/analyzer.js`)
 - **UPI Protocol Parser**: Validates NPCI parameters (`pa`, `pn`, `mc`, `am`, `tn`). Flags payee-name mismatches, merchant code anomalies, and coercive transaction notes ("Immediate Disconnection", "Penalty").
 - **Canonical Redirect Tracer**: Follows HTTP 301/302/307 shortener chains to uncover the destination host.
 - **Shannon Domain Entropy**: Calculates character entropy to detect algorithmically generated domains (DGA) and typo-squatted phishing hosts (`.top`, `.xyz`, `.cc`).
 - **Multilingual Brand Impersonation Detector**: Identifies unauthorized banking, government, and payment portal mimicry across Indic scripts and English.
 - **Binary Package Classifier**: Flags automated downloads of `.apk`, `.exe`, `.dmg`, and `.bat` payloads.
 
-### 4. Multilingual Brand Impersonation & Unicode Anti-Evasion Engine (`js/brandKeywords.js` & `brand_keywords.py`)
+### 5. Multilingual Brand Impersonation & Unicode Anti-Evasion Engine (`js/brandKeywords.js` & `brand_keywords.py`)
 - **5 Indic Languages & English**: Native brand keyword catalogs covering Hindi (हिंदी), Tamil (தமிழ்), Telugu (తెలుగు), Bengali (বাংলা), Marathi (मराठी), and English (en).
 - **18+ Leading Indian Brand Catalogs**: Financial institutions (SBI, HDFC, ICICI, Axis, PNB, BOB, Canara), UPI payment gateways (PhonePe, Paytm, Google Pay/GPay, BHIM), public/government portals (IRCTC, Parivahan, Income Tax Dept, PM-KISAN, LIC), and telecom operators (Jio, Airtel).
 - **Unicode Script Classifier & NFC Normalizer**: Detects Devanagari (`U+0900–U+097F`), Tamil (`U+0B80–U+0BFF`), Telugu (`U+0C00–U+0C7F`), Bengali (`U+0980–U+09FF`), and Latin script blocks. Performs NFC normalization and strips zero-width spaces/joiners (`\u200B`, `\u200C`, `\u200D`, `\uFEFF`) to thwart attacker evasion tactics.
 - **Deep Target & UPI Forensics**: Scans page titles, meta descriptions, target URLs, and UPI `pn` payee names, adding a **+35 risk point penalty** towards a `MALICIOUS` verdict for unverified hosts while recognizing legitimate regional banking domains.
 
-### 5. Incident Reporting & FIR Dossier Generator (`js/reporting.js`)
+### 6. Incident Reporting & FIR Dossier Generator (`js/reporting.js`)
 - **Jurisdictional Station Locator**: Includes directory data for Delhi (IFSO Dwarka), Mumbai (BKC), Bengaluru (Palace Road CID), Hyderabad (TGCSB), Chennai, Kolkata, Pune, and Gurugram.
 - **Cryptographic SHA-256 Hashing**: Calculates a unique fingerprint of the evidence for legal chain-of-custody preservation.
 - **Stamped Complaint PDF Dossier**: Uses `jsPDF` to compile a formal, 1-page A4 complaint sheet ready to carry to a police station, citing relevant sections of the **IT Act 2000 (Section 66D, 43)** and **IPC 420**.
 - **National Portal Formatter**: Generates ready-to-copy structured complaint drafts for the National Cyber Crime Reporting Portal (`cybercrime.gov.in`).
 
-### 6. Community Threat Radar Map (`js/threat_map.js`)
+### 7. Community Threat Radar Map (`js/threat_map.js`)
 - Interactive dark tactical map powered by Leaflet and OpenStreetMap.
 - Animated pulsing radar rings marking recent tamper reports across metro stations, parking booths, and food courts.
 - City quick-zoom filters (Delhi, Mumbai, Bengaluru, Hyderabad, Pune, All India).
