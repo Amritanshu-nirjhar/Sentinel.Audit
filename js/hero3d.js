@@ -80,19 +80,19 @@
       this.renderer.setSize(width, height);
       this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-      // Lighting
-      const ambientLight = new THREE.AmbientLight(0x060f26, 2.5);
+      // Lighting - Refined Executive Radiance
+      const ambientLight = new THREE.AmbientLight(0x0f172a, 2.4);
       this.scene.add(ambientLight);
 
-      const cyanPoint = new THREE.PointLight(0x00F5FF, 4, 18);
+      const cyanPoint = new THREE.PointLight(0x06B6D4, 3.5, 18);
       cyanPoint.position.set(3, 4, 5);
       this.scene.add(cyanPoint);
 
-      const violetPoint = new THREE.PointLight(0x7B2FFF, 3.5, 18);
-      violetPoint.position.set(-3, -3, 4);
-      this.scene.add(violetPoint);
+      const skyFillPoint = new THREE.PointLight(0x0284C7, 2.8, 18);
+      skyFillPoint.position.set(-3, -3, 4);
+      this.scene.add(skyFillPoint);
 
-      const frontLight = new THREE.DirectionalLight(0xffffff, 1.2);
+      const frontLight = new THREE.DirectionalLight(0xF8FAFC, 1.2);
       frontLight.position.set(0, 2, 8);
       this.scene.add(frontLight);
     }
@@ -104,12 +104,12 @@
       cvs.height = 512;
       const ctx = cvs.getContext('2d');
 
-      // Deep cyber background
-      ctx.fillStyle = '#060B1E';
+      // Deep Slate Blue background
+      ctx.fillStyle = '#0F172A';
       ctx.fillRect(0, 0, 512, 512);
 
-      // Grid matrix
-      ctx.strokeStyle = 'rgba(0, 245, 255, 0.12)';
+      // Blueprint Grid matrix
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.12)';
       ctx.lineWidth = 1;
       const step = 32;
       for (let x = 0; x <= 512; x += step) {
@@ -127,17 +127,17 @@
 
       // Draw QR Finder Patterns (Corners)
       const drawFinder = (fx, fy) => {
-        // Outer box
-        ctx.fillStyle = '#00F5FF';
+        // Outer box (Electric Cyan)
+        ctx.fillStyle = '#06B6D4';
         ctx.fillRect(fx, fy, 96, 96);
-        // Inner cutout
-        ctx.fillStyle = '#060B1E';
+        // Inner cutout (Slate background)
+        ctx.fillStyle = '#0F172A';
         ctx.fillRect(fx + 14, fy + 14, 68, 68);
-        // Center block
-        ctx.fillStyle = '#00FF88';
+        // Center block (Neon Mint)
+        ctx.fillStyle = '#10B981';
         ctx.fillRect(fx + 28, fy + 28, 40, 40);
-        // Accent border
-        ctx.strokeStyle = '#7B2FFF';
+        // Accent border (Sky Cyan)
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
         ctx.lineWidth = 2;
         ctx.strokeRect(fx - 4, fy - 4, 104, 104);
       };
@@ -146,35 +146,33 @@
       drawFinder(376, 40);
       drawFinder(40, 376);
 
-      // Random high-tech QR payload blocks
-      ctx.fillStyle = '#00F5FF';
+      // High-tech QR payload blocks (Cyan & Sky Blue)
+      ctx.fillStyle = '#06B6D4';
       for (let i = 0; i < 90; i++) {
         const rx = 160 + Math.floor(Math.random() * 10) * 18;
         const ry = 60 + Math.floor(Math.random() * 22) * 18;
         ctx.fillRect(rx, ry, 14, 14);
       }
-      ctx.fillStyle = '#7B2FFF';
+      ctx.fillStyle = '#38BDF8';
       for (let i = 0; i < 60; i++) {
         const rx = 60 + Math.floor(Math.random() * 22) * 18;
         const ry = 160 + Math.floor(Math.random() * 10) * 18;
         ctx.fillRect(rx, ry, 14, 14);
       }
 
-      // Center Cyber Shield Emblem
+      // Center Defense Shield Emblem (Muted Navy)
       ctx.save();
       ctx.translate(256, 256);
-      ctx.fillStyle = 'rgba(10, 14, 39, 0.92)';
+      ctx.fillStyle = 'rgba(30, 41, 59, 0.95)';
       ctx.beginPath();
       ctx.arc(0, 0, 72, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = '#00F5FF';
-      ctx.lineWidth = 4;
-      ctx.shadowColor = '#00F5FF';
-      ctx.shadowBlur = 18;
+      ctx.strokeStyle = '#06B6D4';
+      ctx.lineWidth = 3;
       ctx.stroke();
 
       // Inner Shield glyph
-      ctx.fillStyle = '#00F5FF';
+      ctx.fillStyle = '#06B6D4';
       ctx.beginPath();
       ctx.moveTo(0, -38);
       ctx.lineTo(32, -18);
@@ -186,15 +184,15 @@
       ctx.fill();
 
       // Lock center
-      ctx.fillStyle = '#060B1E';
+      ctx.fillStyle = '#0F172A';
       ctx.beginPath();
       ctx.arc(0, 0, 12, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
-      // Top & Bottom Holographic Telemetry Text
+      // Top & Bottom Cryptographic Telemetry Text
       ctx.font = 'bold 16px "JetBrains Mono", monospace';
-      ctx.fillStyle = '#00F5FF';
+      ctx.fillStyle = '#06B6D4';
       ctx.fillText('// SENTINEL.AUDIT PROTOCOL', 140, 395);
       ctx.fillStyle = '#94A3B8';
       ctx.font = '12px "JetBrains Mono", monospace';
@@ -214,10 +212,10 @@
       const monolithGeo = new THREE.BoxGeometry(3.2, 3.2, 0.35);
       const monolithMat = new THREE.MeshStandardMaterial({
         map: this.qrTexture,
-        roughness: 0.2,
-        metalness: 0.7,
-        emissive: 0x002233,
-        emissiveIntensity: 0.5
+        roughness: 0.25,
+        metalness: 0.65,
+        emissive: 0x082f49,
+        emissiveIntensity: 0.35
       });
       this.monolith = new THREE.Mesh(monolithGeo, monolithMat);
       this.coreGroup.add(this.monolith);
@@ -225,54 +223,54 @@
       // Wireframe bounding shell
       const wireGeo = new THREE.BoxGeometry(3.35, 3.35, 0.45);
       const wireMat = new THREE.MeshBasicMaterial({
-        color: 0x00F5FF,
+        color: 0x06B6D4,
         wireframe: true,
         transparent: true,
-        opacity: 0.35
+        opacity: 0.25
       });
       this.wireBox = new THREE.Mesh(wireGeo, wireMat);
       this.coreGroup.add(this.wireBox);
 
       // 2. Concentric Gyroscopic Rings
       // Inner Cyan Ring
-      const innerRingGeo = new THREE.TorusGeometry(2.45, 0.035, 16, 80);
+      const innerRingGeo = new THREE.TorusGeometry(2.45, 0.032, 16, 80);
       const innerRingMat = new THREE.MeshBasicMaterial({
-        color: 0x00F5FF,
+        color: 0x06B6D4,
         transparent: true,
-        opacity: 0.8
+        opacity: 0.7
       });
       this.innerRing = new THREE.Mesh(innerRingGeo, innerRingMat);
       this.innerRing.rotation.x = Math.PI / 3;
       this.coreGroup.add(this.innerRing);
 
-      // Middle Electric Violet Ring
-      const midRingGeo = new THREE.TorusGeometry(3.05, 0.04, 16, 90);
+      // Middle Sky Cyan Ring
+      const midRingGeo = new THREE.TorusGeometry(3.05, 0.035, 16, 90);
       const midRingMat = new THREE.MeshBasicMaterial({
-        color: 0x7B2FFF,
+        color: 0x38BDF8,
         transparent: true,
-        opacity: 0.85
+        opacity: 0.65
       });
       this.midRing = new THREE.Mesh(midRingGeo, midRingMat);
       this.midRing.rotation.y = Math.PI / 4;
       this.coreGroup.add(this.midRing);
 
-      // Outer Neon Green Defense Ring with dashes
-      const outerRingGeo = new THREE.TorusGeometry(3.7, 0.028, 16, 100);
+      // Outer Mint Defense Ring
+      const outerRingGeo = new THREE.TorusGeometry(3.7, 0.026, 16, 100);
       const outerRingMat = new THREE.MeshBasicMaterial({
-        color: 0x00FF88,
+        color: 0x10B981,
         transparent: true,
-        opacity: 0.6
+        opacity: 0.5
       });
       this.outerRing = new THREE.Mesh(outerRingGeo, outerRingMat);
       this.outerRing.rotation.z = Math.PI / 6;
       this.coreGroup.add(this.outerRing);
 
       // 3. Scanning Laser Plane
-      const laserGeo = new THREE.PlaneGeometry(3.4, 0.08);
+      const laserGeo = new THREE.PlaneGeometry(3.4, 0.06);
       const laserMat = new THREE.MeshBasicMaterial({
-        color: 0x00F5FF,
+        color: 0x06B6D4,
         transparent: true,
-        opacity: 0.9,
+        opacity: 0.85,
         side: THREE.DoubleSide
       });
       this.laserPlane = new THREE.Mesh(laserGeo, laserMat);
@@ -280,23 +278,23 @@
       this.coreGroup.add(this.laserPlane);
 
       // Laser Glow Curtain
-      const glowGeo = new THREE.PlaneGeometry(3.4, 0.8);
+      const glowGeo = new THREE.PlaneGeometry(3.4, 0.65);
       const glowMat = new THREE.MeshBasicMaterial({
-        color: 0x00F5FF,
+        color: 0x06B6D4,
         transparent: true,
-        opacity: 0.18,
+        opacity: 0.12,
         side: THREE.DoubleSide
       });
       const laserGlow = new THREE.Mesh(glowGeo, glowMat);
-      laserGlow.position.y = -0.4;
+      laserGlow.position.y = -0.32;
       this.laserPlane.add(laserGlow);
 
       // 4. Orbiting Verified Cyber Satellites (Polyhedra)
       const satDefs = [
-        { geo: new THREE.OctahedronGeometry(0.18), color: 0x00F5FF, dist: 2.8, speed: 1.2, tilt: 0.4 },
-        { geo: new THREE.IcosahedronGeometry(0.15), color: 0x7B2FFF, dist: 3.3, speed: -0.9, tilt: -0.6 },
-        { geo: new THREE.TetrahedronGeometry(0.18), color: 0x00FF88, dist: 3.9, speed: 1.5, tilt: 1.1 },
-        { geo: new THREE.OctahedronGeometry(0.14), color: 0xFFB800, dist: 2.6, speed: -1.7, tilt: -1.2 }
+        { geo: new THREE.OctahedronGeometry(0.16), color: 0x06B6D4, dist: 2.8, speed: 1.1, tilt: 0.4 },
+        { geo: new THREE.IcosahedronGeometry(0.14), color: 0x38BDF8, dist: 3.3, speed: -0.85, tilt: -0.6 },
+        { geo: new THREE.TetrahedronGeometry(0.16), color: 0x10B981, dist: 3.8, speed: 1.3, tilt: 1.1 },
+        { geo: new THREE.OctahedronGeometry(0.13), color: 0xCBD5E1, dist: 2.6, speed: -1.5, tilt: -1.2 }
       ];
 
       satDefs.forEach(def => {
@@ -312,7 +310,7 @@
       // 5. Interactive Pulse Wave Ring (Fires on Click)
       const pulseGeo = new THREE.RingGeometry(0.1, 0.2, 48);
       const pulseMat = new THREE.MeshBasicMaterial({
-        color: 0x00F5FF,
+        color: 0x06B6D4,
         transparent: true,
         opacity: 0,
         side: THREE.DoubleSide
@@ -322,7 +320,7 @@
       this.coreGroup.add(this.pulseRing);
 
       // 6. Deep Ambient Particle Field
-      const particleCount = 1200;
+      const particleCount = 900;
       const positions = new Float32Array(particleCount * 3);
       for (let i = 0; i < particleCount * 3; i += 3) {
         positions[i] = (Math.random() - 0.5) * 35;
@@ -332,10 +330,10 @@
       const particleGeo = new THREE.BufferGeometry();
       particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
       const particleMat = new THREE.PointsMaterial({
-        color: 0x00F5FF,
-        size: 0.065,
+        color: 0x38BDF8,
+        size: 0.055,
         transparent: true,
-        opacity: 0.55
+        opacity: 0.45
       });
       this.particleSystem = new THREE.Points(particleGeo, particleMat);
       this.scene.add(this.particleSystem);
